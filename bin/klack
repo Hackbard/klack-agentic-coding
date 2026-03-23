@@ -25,6 +25,13 @@ if [[ ${#missing[@]} -gt 0 ]]; then
   exit 1
 fi
 
+# --- Version -----------------------------------------------------------------
+
+if [[ "${1:-}" == "--version" || "${1:-}" == "-v" || "${1:-}" == "version" ]]; then
+  grep '"version"' "$(dirname "$REAL_BIN")/../package.json" | head -1 | sed 's/.*"version": *"\([^"]*\)".*/\1/'
+  exit 0
+fi
+
 # --- Help --------------------------------------------------------------------
 
 if [[ "${1:-}" == "help" || "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
@@ -85,9 +92,19 @@ if [[ "${1:-}" == "epic" ]]; then
 
   # Sync BMAD-Method skills if available
   KLACK_SKILLS="$(cd "$(dirname "$REAL_BIN")/../.claude/skills" 2>/dev/null && pwd || echo "")"
-  if [[ -n "$KLACK_SKILLS" && -d "$KLACK_SKILLS" ]]; then
-    mkdir -p "$KLACK_ROOT/.claude/skills"
-    cp -r "$KLACK_SKILLS"/bmad-* "$KLACK_ROOT/.claude/skills/" 2>/dev/null || true
+  if [[ -z "$KLACK_SKILLS" || ! -d "$KLACK_SKILLS" ]]; then
+    echo "Note: Skills directory not found. BMAD-Method skills not bundled — install separately: https://github.com/bmad-code-org/BMAD-METHOD/"
+  else
+    bmad_found=false
+    for d in "$KLACK_SKILLS"/bmad-*; do
+      [[ -d "$d" ]] && bmad_found=true && break
+    done
+    if [[ "$bmad_found" == "true" ]]; then
+      mkdir -p "$KLACK_ROOT/.claude/skills"
+      cp -r "$KLACK_SKILLS"/bmad-* "$KLACK_ROOT/.claude/skills/" 2>/dev/null || true
+    else
+      echo "Note: No bmad-* skill directories found in $KLACK_SKILLS. Install BMAD-Method separately: https://github.com/bmad-code-org/BMAD-METHOD/"
+    fi
   fi
 
   PLAN_PROMPT="$(cat "$KLACK_LIB/commands/klack-plan.md")"

@@ -1,6 +1,6 @@
 # Story 10.1: Interactive-to-Autonomous Handoff
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -19,7 +19,31 @@ so that the agent continues where I left off without me re-explaining the contex
 
 ## Tasks
 
-- [ ] Create `/klack next` as a Claude slash command (skill)
-- [ ] Turmwächter: after interactive session, check for resume.md
-- [ ] If resume.md exists: `claude -c -p "Continue: $(cat resume.md)"`
-- [ ] Clean up resume.md after autonomous run
+- [x] Create `/klack next` as a Claude slash command (skill)
+- [x] Turmwächter: after interactive session, check for resume.md
+- [x] If resume.md exists: `claude -c -p "Continue: $(cat resume.md)"`
+- [x] Clean up resume.md after autonomous run
+
+## Dev Agent Record
+
+### Implementation Plan
+All tasks were already implemented prior to story creation.
+
+### Completion Notes
+- All 4 tasks verified as complete by code inspection (2026-03-23)
+- `/klack-next` skill exists at `.claude/skills/klack-next/SKILL.md`
+- Turmwächter resume detection implemented in `lib/scripts/ticket-run.sh` lines 295-345
+- Resume cleanup at lines 297 (before interactive session) and 315 (after reading)
+- Error handling for failed autonomous continuation at lines 332-341
+
+### Debug Log
+No issues — implementation pre-existed story creation.
+
+## File List
+
+- `.claude/skills/klack-next/SKILL.md` (existing, verified)
+- `lib/scripts/ticket-run.sh` (existing, verified — lines 295-345)
+
+## Change Log
+
+- 2026-03-23: Story verified as already implemented. All ACs satisfied. Marked done.

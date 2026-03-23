@@ -1,6 +1,6 @@
 {
   "name": "klack",
-  "version": "0.1.0",
+  "version": "0.0.0-development",
   "description": "Parallel agentic coding. One command to orchestrate them all.",
   "bin": {
     "klack": "./bin/klack"
@@ -9,7 +9,8 @@
     "bin/",
     "lib/",
     ".klack.yml.example",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "keywords": [
     "ai",
@@ -25,11 +26,25 @@
   ],
   "author": "Postmeister",
   "license": "MIT",
-  "engines": {
-    "node": ">=18"
-  },
+  "homepage": "https://github.com/klack-dev/klack",
   "repository": {
     "type": "git",
     "url": "https://github.com/klack-dev/klack"
+  },
+  "bugs": {
+    "url": "https://github.com/klack-dev/klack/issues"
+  },
+  "scripts": {
+    "prepublishOnly": "test -n \"$CI\" || (echo 'ERROR: Use semantic-release via CI, not manual npm publish.' && exit 1)"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "semantic-release": "^24.0.0",
+    "@semantic-release/changelog": "^6.0.0",
+    "@semantic-release/git": "^10.0.0",
+    "@commitlint/cli": "^19.0.0",
+    "@commitlint/config-conventional": "^19.0.0"
   }
 }

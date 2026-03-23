@@ -1,0 +1,27 @@
+# Dev artifacts
+_bmad/
+_bmad-output/
+docs/
+
+# Source files (lib/ has the copies for distribution)
+commands/
+scripts/
+
+# Runtime (generated at use time)
+.klack/
+
+# Project-level Claude config (not part of the package)
+.claude/
+
+# Legacy installer
+install.sh
+
+# Dev config
+.DS_Store
+.gitlab-ci.yml
+.github/
+*.example
+!.klack.yml.example
+
+# Concept and planning docs
+der-klack-konzept.md

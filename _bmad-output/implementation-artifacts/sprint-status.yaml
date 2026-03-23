@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-20
-last_updated: 2026-03-20T00:00:00
+last_updated: 2026-03-23T00:00:00
 project: cc-crew
 project_key: NOKEY
 tracking_system: file-system
@@ -107,3 +107,13 @@ development_status:
   9-1-klack-protocol-context-file: done
   9-2-command-files-restructure: done
   epic-9-retrospective: optional
+
+  # Epic 10: Klack-Next — Interactive-to-Autonomous Handoff
+  epic-10: in-progress
+  10-1-interactive-to-autonomous-handoff: done
+  epic-10-retrospective: optional
+
+  # Epic 11: npm Packaging & Distribution
+  epic-11: in-progress
+  11-1-npm-packaging-and-distribution: review
+  epic-11-retrospective: optional
