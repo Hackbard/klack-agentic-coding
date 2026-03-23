@@ -1,0 +1,109 @@
+# generated: 2026-03-20
+# last_updated: 2026-03-20
+# project: cc-crew
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: {project-root}/_bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-03-20
+last_updated: 2026-03-20T00:00:00
+project: cc-crew
+project_key: NOKEY
+tracking_system: file-system
+story_location: "{project-root}/_bmad-output/implementation-artifacts"
+
+development_status:
+  # Epic 1: Klack-Fundament
+  epic-1: done
+  1-1-cc-crew-argument-parsing-and-model-configuration: done
+  1-2-tmux-session-and-ticket-windows: done
+  1-3-klack-signale-directory-structure: done
+  1-4-turmwaechter-step-execution-and-status-tracking: done
+  1-5-ruecksignal-mechanismus-waiting-and-resuming: done
+  1-6-session-restore-on-restart: done
+  1-7-installer-script: done
+  epic-1-retrospective: optional
+
+  # Epic 2: Ankh-Morpork Hauptturm
+  epic-2: done
+  2-1-status-dashboard-all-tickets-at-a-glance: done
+  2-2-question-display-and-answer-input: done
+  2-3-add-new-tickets-to-running-session: done
+  2-4-layout-switching: done
+  2-5-theme-switching: done
+  2-6-input-bar-command-handler: done
+  epic-2-retrospective: optional
+
+  # Epic 3: Story-Analyse (ticket-story)
+  epic-3: done
+  3-1-ticket-story-command-jira-ticket-ingestion: done
+  3-2-enriched-story-md-creation: done
+  epic-3-retrospective: optional
+
+  # Epic 4: Autonome Implementierung (ticket-dev)
+  epic-4: done
+  4-1-git-worktree-and-branch-setup: done
+  4-2-story-implementation-and-commit: done
+  epic-4-retrospective: optional
+
+  # Epic 5: Quality Gate (ticket-qa)
+  epic-5: done
+  5-1-pest-test-writing: done
+  5-2-quality-gate-loop: done
+  epic-5-retrospective: optional
+
+  # Epic 6: Code Review (ticket-review)
+  epic-6: done
+  6-1-git-diff-review-and-review-md: done
+  6-2-critical-finding-block-and-ruecksignal: done
+  epic-6-retrospective: optional
+
+  # Epic 7: Release (ticket-release)
+  epic-7: done
+  7-1-merge-request-creation-via-glab: done
+  7-2-jira-comment-and-tower-completion: done
+  epic-7-retrospective: optional
+
+  # Epic 8: BMAD-Method Integration — Commands nutzen BMAD-Method Skills statt Eigenerfindung
+  epic-8: done
+  8-1-ticket-story-bmad-integration: done
+  8-2-ticket-dev-bmad-integration: done
+  8-3-ticket-qa-bmad-integration: done
+  8-4-ticket-review-bmad-integration: done
+  8-5-ticket-release-bmad-refinement: done
+  epic-8-retrospective: optional
+
+  # Epic 9: Klack Protocol Layer — Jeder Agent laedt Klack-Kontext vor BMAD-Method Skill
+  epic-9: done
+  9-1-klack-protocol-context-file: done
+  9-2-command-files-restructure: done
+  epic-9-retrospective: optional

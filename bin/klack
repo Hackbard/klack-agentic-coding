@@ -1,0 +1,309 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ============================================================================
+# klack — Parallel agentic coding. One command to orchestrate them all.
+# ============================================================================
+
+# Find the lib directory (resolves symlinks first)
+REAL_BIN="$(readlink -f "$0" 2>/dev/null || python3 -c "import os,sys; print(os.path.realpath(sys.argv[1]))" "$0")"
+KLACK_LIB="$(cd "$(dirname "$REAL_BIN")/../lib" && pwd)"
+export KLACK_LIB
+
+# --- Dependency Check --------------------------------------------------------
+
+missing=()
+for dep in tmux claude; do
+  if ! command -v "$dep" &>/dev/null; then
+    missing+=("$dep")
+  fi
+done
+
+if [[ ${#missing[@]} -gt 0 ]]; then
+  echo "ERROR: Missing required dependencies: ${missing[*]}" >&2
+  echo "Install them and ensure they are in your PATH." >&2
+  exit 1
+fi
+
+# --- Help --------------------------------------------------------------------
+
+if [[ "${1:-}" == "help" || "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+  cat <<'EOF'
+klack — Parallel agentic coding. One command to orchestrate them all.
+
+Commands:
+  klack init                          Create klack.yaml in current directory
+  klack epic                          Plan an epic interactively (BMAD-Method)
+  klack epic <file>                   Plan an epic from a source document
+  klack new epic "Name"               Quick-create a local epic
+  klack new ticket <epic#> "Name"     Quick-create a local ticket
+  klack list                          List local tickets
+  klack feat ID [fix ID ...]          Start pipeline for tickets (parallel)
+  klack                               Restore previous session
+
+Options:
+  ID+review                           Interactive review after each step
+  --force                             Skip interactive reviews (deprecated)
+
+Examples:
+  klack epic                          Start interactive epic planning
+  klack epic konzept.md               Plan epic from a document
+  klack feat E1-001 feat E1-002       Two local tickets in parallel
+  klack feat IN-1356+review           Jira ticket with review pauses
+  klack feat IN-1356 fix IN-2200      Mixed types, fully autonomous
+EOF
+  exit 0
+fi
+
+# --- Init: Copy klack.yaml.example if no config exists ----------------------
+
+if [[ "${1:-}" == "init" ]]; then
+  if [[ -f "klack.yaml" ]]; then
+    echo "klack.yaml already exists."
+  else
+    cp "$KLACK_LIB/../klack.yaml.example" ./klack.yaml
+    echo "Created klack.yaml — edit it for your project."
+  fi
+  exit 0
+fi
+
+# --- Epic: Plan epic from source or interactively ----------------------------
+
+if [[ "${1:-}" == "epic" ]]; then
+  shift
+  source_file="${1:-}"
+
+  KLACK_ROOT="$(pwd)"
+  export KLACK_ROOT
+
+  # Sync everything from package
+  mkdir -p "$KLACK_ROOT/.claude/commands" "$KLACK_ROOT/.klack/tickets" "$KLACK_ROOT/.klack/scripts/hauptturm"
+  cp "$KLACK_LIB/commands/"*.md "$KLACK_ROOT/.claude/commands/"
+  cp "$KLACK_LIB/scripts/ticket-run.sh" "$KLACK_ROOT/.klack/scripts/"
+  cp "$KLACK_LIB/scripts/hauptturm/"*.sh "$KLACK_ROOT/.klack/scripts/hauptturm/"
+  chmod +x "$KLACK_ROOT/.klack/scripts/"*.sh "$KLACK_ROOT/.klack/scripts/hauptturm/"*.sh 2>/dev/null || true
+
+  # Sync BMAD-Method skills if available
+  KLACK_SKILLS="$(cd "$(dirname "$REAL_BIN")/../.claude/skills" 2>/dev/null && pwd || echo "")"
+  if [[ -n "$KLACK_SKILLS" && -d "$KLACK_SKILLS" ]]; then
+    mkdir -p "$KLACK_ROOT/.claude/skills"
+    cp -r "$KLACK_SKILLS"/bmad-* "$KLACK_ROOT/.claude/skills/" 2>/dev/null || true
+  fi
+
+  PLAN_PROMPT="$(cat "$KLACK_LIB/commands/klack-plan.md")"
+
+  # Build source context if file provided
+  source_context=""
+  if [[ -n "$source_file" && -f "$source_file" ]]; then
+    source_context="
+
+--- SOURCE DOCUMENT ---
+$(cat "$source_file")
+--- END SOURCE ---
+
+Das obige Dokument ist die Grundlage fuer das Epic. Nutze es als Input fuer /bmad-create-epics-and-stories."
+    echo "Epic planning with source: $source_file"
+  fi
+
+  # Write the initial command for the Hauptturm Claude to execute
+  mkdir -p "$KLACK_ROOT/.klack"
+  cat > "$KLACK_ROOT/.klack/epic-init.md" <<EOPROMPT
+${source_context}
+
+Fuehre SOFORT /bmad-create-epics-and-stories aus.
+EOPROMPT
+
+  # Start full Klack environment — Hauptturm Claude will pick up epic-init.md
+  # We inject into the hauptturm.md system prompt
+  HAUPTTURM_CMD="$KLACK_ROOT/.claude/commands/hauptturm.md"
+  cat >> "$HAUPTTURM_CMD" <<'EPIC_APPEND'
+
+## Auto-Start
+
+Beim Start: pruefe ob `$KLACK_ROOT/.klack/epic-init.md` existiert. Wenn ja:
+1. Lies den Inhalt
+2. Fuehre `/bmad-create-epics-and-stories` aus mit dem Kontext aus der Datei
+3. Loesche die Datei danach
+EPIC_APPEND
+
+  # Start Klack tmux session without tickets (just Hauptturm)
+  export KLACK_SESSION="der-klack"
+
+  # Kill stale session
+  if tmux has-session -t "$KLACK_SESSION" 2>/dev/null; then
+    if ! tmux list-windows -t "$KLACK_SESSION" -F '#{window_name}' 2>/dev/null | grep -qx "hauptturm"; then
+      tmux kill-session -t "$KLACK_SESSION" 2>/dev/null
+    fi
+  fi
+
+  if ! tmux has-session -t "$KLACK_SESSION" 2>/dev/null; then
+    tmux new-session -d -s "$KLACK_SESSION" -n "hauptturm" -c "$KLACK_ROOT"
+    tmux set-option -t "$KLACK_SESSION" -g mouse on
+    tmux set-option -t "$KLACK_SESSION" -g status off
+    tmux set-option -t "$KLACK_SESSION" -g pane-border-style "fg=colour240"
+    tmux set-option -t "$KLACK_SESSION" -g pane-active-border-style "fg=colour51"
+    tmux set-option -t "$KLACK_SESSION" -g pane-border-lines heavy
+    tmux set-option -t "$KLACK_SESSION" -g pane-border-format "#{pane_title}"
+    tmux set-option -t "$KLACK_SESSION" default-shell "$SHELL"
+  fi
+
+  # Init Hauptturm layout
+  touch "$KLACK_ROOT/.klack/activity.log"
+  KLACK_ROOT="$KLACK_ROOT" KLACK_SESSION="$KLACK_SESSION" \
+    bash "$KLACK_ROOT/.klack/scripts/hauptturm/layout.sh" hybrid 2>/dev/null || true
+
+  # Send the BMAD epic command to the Claude pane after a delay
+  # Find the Claude pane (last one in hauptturm)
+  (
+    sleep 3
+    total=$(tmux list-panes -t "$KLACK_SESSION:hauptturm" 2>/dev/null | wc -l | tr -d ' ')
+    claude_pane=$((total - 1))
+    tmux send-keys -t "$KLACK_SESSION:hauptturm.$claude_pane" "/bmad-create-epics-and-stories" Enter
+  ) &
+
+  exec tmux attach-session -t "$KLACK_SESSION"
+fi
+
+# --- New: Create epic + tickets locally (quick, non-interactive) -------------
+
+if [[ "${1:-}" == "new" ]]; then
+  shift
+  subcommand="${1:-}"
+  shift || true
+
+  TICKETS_DIR="$(pwd)/.klack/tickets"
+  mkdir -p "$TICKETS_DIR"
+
+  case "$subcommand" in
+    epic)
+      # Find next epic number
+      last_epic=$(ls "$TICKETS_DIR"/epic-*.md 2>/dev/null | sort -V | tail -1 | sed 's/.*epic-\([0-9]*\)\.md/\1/' || echo "0")
+      [[ -z "$last_epic" ]] && last_epic=0
+      next_epic=$((last_epic + 1))
+      epic_file="$TICKETS_DIR/epic-${next_epic}.md"
+
+      title="${*:-Epic $next_epic}"
+      cat > "$epic_file" <<EOF
+# Epic $next_epic: $title
+
+## Ziel
+[Beschreibe das Ziel dieses Epics]
+
+## Tickets
+[Werden mit 'klack new ticket $next_epic "Titel"' angelegt]
+EOF
+      echo "Created: $epic_file"
+      echo "Add tickets: klack new ticket $next_epic \"Ticket Titel\""
+      ;;
+
+    ticket)
+      epic_num="${1:-}"
+      shift || true
+      title="${*:-Untitled}"
+
+      if [[ -z "$epic_num" ]]; then
+        echo "Usage: klack new ticket <epic-number> \"Ticket Titel\"" >&2
+        exit 1
+      fi
+
+      # Find next ticket number in this epic
+      prefix="E${epic_num}"
+      last_num=$(ls "$TICKETS_DIR"/${prefix}-*.md 2>/dev/null | sort -V | tail -1 | sed "s/.*${prefix}-\([0-9]*\)\.md/\1/" || echo "0")
+      [[ -z "$last_num" ]] && last_num=0
+      next_num=$(printf "%03d" $((10#$last_num + 1)))
+      ticket_id="${prefix}-${next_num}"
+      ticket_file="$TICKETS_DIR/${ticket_id}.md"
+
+      cat > "$ticket_file" <<EOF
+# ${ticket_id}: $title
+
+Type: feat
+Status: open
+Depends:
+
+## Beschreibung
+[Was gemacht werden soll]
+
+## Acceptance Criteria
+- [ ] [Erstes Acceptance Criterion]
+EOF
+      echo "Created: $ticket_file"
+      echo "Run: klack feat $ticket_id"
+
+      # Add to epic file if exists
+      epic_file="$TICKETS_DIR/epic-${epic_num}.md"
+      if [[ -f "$epic_file" ]]; then
+        echo "- ${ticket_id}: $title" >> "$epic_file"
+      fi
+      ;;
+
+    *)
+      echo "Usage:" >&2
+      echo "  klack new epic \"Epic Titel\"" >&2
+      echo "  klack new ticket <epic-number> \"Ticket Titel\"" >&2
+      exit 1
+      ;;
+  esac
+  exit 0
+fi
+
+# --- List: Show local tickets ------------------------------------------------
+
+if [[ "${1:-}" == "list" ]]; then
+  TICKETS_DIR="$(pwd)/.klack/tickets"
+  if [[ ! -d "$TICKETS_DIR" ]]; then
+    echo "No local tickets. Create with: klack new epic \"Name\""
+    exit 0
+  fi
+
+  echo "Epics:"
+  for ef in "$TICKETS_DIR"/epic-*.md; do
+    [[ -f "$ef" ]] || continue
+    head -1 "$ef" | sed 's/^# /  /'
+  done
+
+  echo ""
+  echo "Tickets:"
+  for tf in "$TICKETS_DIR"/E*-*.md; do
+    [[ -f "$tf" ]] || continue
+    id="$(basename "$tf" .md)"
+    title="$(head -1 "$tf" | sed 's/^# //')"
+    status="$(grep '^Status:' "$tf" 2>/dev/null | head -1 | sed 's/Status: //' || echo "unknown")"
+    printf "  %-12s %-8s %s\n" "$id" "[$status]" "$title"
+  done
+  exit 0
+fi
+
+# --- Setup .klack/ runtime directory -----------------------------------------
+
+KLACK_ROOT="$(pwd)"
+export KLACK_ROOT
+
+mkdir -p "$KLACK_ROOT/.klack/scripts/hauptturm"
+mkdir -p "$KLACK_ROOT/.klack/signale"
+
+# Sync scripts from package lib to .klack/ (always fresh)
+cp "$KLACK_LIB/scripts/ticket-run.sh" "$KLACK_ROOT/.klack/scripts/"
+chmod +x "$KLACK_ROOT/.klack/scripts/ticket-run.sh"
+cp "$KLACK_LIB/scripts/hauptturm/"*.sh "$KLACK_ROOT/.klack/scripts/hauptturm/"
+chmod +x "$KLACK_ROOT/.klack/scripts/hauptturm/"*.sh
+
+# Sync commands to .claude/commands/ (always fresh)
+mkdir -p "$KLACK_ROOT/.claude/commands"
+cp "$KLACK_LIB/commands/"*.md "$KLACK_ROOT/.claude/commands/"
+
+# Sync skills
+mkdir -p "$KLACK_ROOT/.claude/skills/klack-weiter"
+cp "$KLACK_LIB/skills/klack-weiter/SKILL.md" "$KLACK_ROOT/.claude/skills/klack-weiter/"
+
+# Ensure .gitignore has our entries
+GITIGNORE="$KLACK_ROOT/.gitignore"
+ENTRIES=(".klack/signale/" ".klack/session.json" ".klack/activity.log" ".klack/active_theme" ".klack/cmd.fifo" ".klack/scripts/")
+touch "$GITIGNORE"
+for entry in "${ENTRIES[@]}"; do
+  grep -qxF "$entry" "$GITIGNORE" 2>/dev/null || echo "$entry" >> "$GITIGNORE"
+done
+
+# --- Hand off to klack.sh ---------------------------------------------------
+
+exec bash "$KLACK_LIB/scripts/klack.sh" "$@"

@@ -1,0 +1,35 @@
+{
+  "name": "klack",
+  "version": "0.1.0",
+  "description": "Parallel agentic coding. One command to orchestrate them all.",
+  "bin": {
+    "klack": "./bin/klack"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "klack.yaml.example",
+    "README.md"
+  ],
+  "keywords": [
+    "ai",
+    "agents",
+    "parallel",
+    "coding",
+    "claude",
+    "tmux",
+    "pipeline",
+    "autonomous",
+    "agentic",
+    "bmad"
+  ],
+  "author": "Postmeister",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/klack-dev/klack"
+  }
+}

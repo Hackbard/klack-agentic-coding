@@ -1,0 +1,27 @@
+# klack.yaml — Project Configuration
+# Copy this to your project root and adjust.
+
+# Where do tickets live?
+# Options: jira, github, gitlab, linear, markdown
+ticket_source: jira
+
+# How to create merge/pull requests?
+# Options: gitlab (glab), github (gh)
+pr_tool: gitlab
+
+# Target branch for MRs/PRs
+pr_target_branch: develop
+
+# Quality gate tools (from your CI config)
+# Set to "none" to skip QA step entirely
+qa_ci_config: .gitlab-ci.yml
+
+# Which CI to monitor in pipeline step?
+# Options: gitlab, github
+ci_tool: gitlab
+
+# Optional: Jira project key (for ticket ID validation)
+# jira_project: IN
+
+# Optional: custom branch prefix (default: worktree-)
+# branch_prefix: worktree-
