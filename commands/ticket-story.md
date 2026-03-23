@@ -3,7 +3,7 @@
 ## 1. Protokoll laden
 
 Lies zuerst vollstaendig: `commands/klack-protocol.md` (oder `.claude/commands/klack-protocol.md`)
-Das ist dein Betriebshandbuch. Befolge es. Lies `klack.yaml` fuer die Projekt-Config.
+Das ist dein Betriebshandbuch. Befolge es. Lies `.klack.yml` fuer die Projekt-Config.
 
 ## 2. Dein Step: `story`
 
@@ -11,7 +11,7 @@ Der Turmwaechter hat status.json bereits auf `running` gesetzt.
 
 ## 3. Ticket einlesen
 
-Basierend auf `ticket_source` aus `klack.yaml`:
+Basierend auf `ticket_source` aus `.klack.yml`:
 
 - **jira**: Atlassian MCP → `getJiraIssue`, Kommentare, verlinkte Issues
 - **github**: `gh issue view KLACK_TICKET --json title,body,comments,labels`

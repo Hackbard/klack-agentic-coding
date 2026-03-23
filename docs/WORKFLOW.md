@@ -43,7 +43,7 @@ When you're done reviewing, two options:
 Type `/exit`. The pipeline advances to the next step. Your review is done, the agent's work stands as-is.
 
 **Option B: Hand off to autonomous agent**
-Type `/klack-weiter`. Claude writes a resume file with your current state — what you did, what's still open, what the next step should be. Then type `/exit`. The Turmwächter picks up the resume and starts an autonomous Claude agent that continues where you left off, with full conversation context via `claude -c`.
+Type `/klack-next`. Claude writes a resume file with your current state — what you did, what's still open, what the next step should be. Then type `/exit`. The Turmwächter picks up the resume and starts an autonomous Claude agent that continues where you left off, with full conversation context via `claude -c`.
 
 ### Mix and Match
 
@@ -63,7 +63,7 @@ Here's what happens to IN-1356 when you run `klack feat IN-1356`:
 [IN-1356] ⠹ STORY → · DEV → · QA → · REVIEW → · RELEASE → · CI
 ```
 
-- Agent reads your ticket from Jira (or GitHub, GitLab, Linear — whatever `klack.yaml` says)
+- Agent reads your ticket from Jira (or GitHub, GitLab, Linear — whatever `.klack.yml` says)
 - Loads the BMAD-Method `create-story` workflow
 - Produces a complete, implementation-ready `story.md`
 - Resolves ambiguities autonomously or asks you via Rücksignal
@@ -164,7 +164,7 @@ Window 0 in your tmux session. Has three zones:
 | "kill alles" | Stops everything |
 | "neustart IN-1356" | Kills and restarts that ticket |
 
-## The /klack-weiter Handoff
+## The /klack-next Handoff
 
 This is the bridge between interactive work and autonomous execution.
 
@@ -173,7 +173,7 @@ This is the bridge between interactive work and autonomous execution.
 **What you do:**
 
 ```
-> /klack-weiter
+> /klack-next
 ```
 
 Claude analyzes your conversation, writes a resume file:
@@ -197,11 +197,11 @@ Beachte: Das neue AC #4 erfordert eine Migration.
 
 Then tells you to `/exit`. You do. The Turmwächter sees the resume file, starts `claude -c` (continue — same conversation context!) with the resume as instruction. The agent picks up exactly where you left off and works autonomously.
 
-**What if you just `/exit` without `/klack-weiter`?**
+**What if you just `/exit` without `/klack-next`?**
 Normal behavior. Pipeline moves to the next step. Your interactive work is preserved in the conversation history but the agent doesn't try to "continue" anything.
 
 **What if you were just chatting, not doing real work?**
-Don't use `/klack-weiter`. Just `/exit`. The pipeline doesn't know or care what you discussed — it moves to the next step based on the files on disk.
+Don't use `/klack-next`. Just `/exit`. The pipeline doesn't know or care what you discussed — it moves to the next step based on the files on disk.
 
 ## Resuming After Interruption
 
@@ -254,7 +254,7 @@ Window 3: IN-3000 → story ⠹ → ...
 
 ## Configuration Cheat Sheet
 
-**`klack.yaml`** in your project root:
+**`.klack.yml`** in your project root:
 
 ```yaml
 ticket_source: jira       # jira | github | gitlab | linear | markdown

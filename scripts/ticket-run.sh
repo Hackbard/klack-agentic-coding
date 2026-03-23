@@ -296,8 +296,8 @@ KLACK_DIR: $KLACK_DIR"
         # Clean up any previous resume file
         rm -f "$KLACK_DIR/resume.md"
 
-        log_activity "$current_step done — interaktive Session (/klack-weiter fuer Uebergabe, /exit zum Weitermachen)"
-        update_status "$current_step" "done" "Review — /klack-weiter oder /exit"
+        log_activity "$current_step done — interaktive Session (/klack-next fuer Uebergabe, /exit zum Weitermachen)"
+        update_status "$current_step" "done" "Review — /klack-next oder /exit"
         set +e
         ANTHROPIC_MODEL="$step_model" claude \
           --dangerously-skip-permissions \
@@ -306,9 +306,9 @@ KLACK_DIR: $KLACK_DIR"
           -c
         set -e
 
-        # Check if developer triggered /klack-weiter (resume.md exists)
+        # Check if developer triggered /klack-next (resume.md exists)
         if [[ -f "$KLACK_DIR/resume.md" ]]; then
-          log_activity "Developer hat /klack-weiter genutzt — autonome Weiterarbeit"
+          log_activity "Developer hat /klack-next genutzt — autonome Weiterarbeit"
           update_status "$current_step" "done" "Autonome Weiterarbeit nach Review"
 
           resume_prompt="$(cat "$KLACK_DIR/resume.md")"

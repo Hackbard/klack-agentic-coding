@@ -79,10 +79,10 @@ In your project directory:
 klack init
 ```
 
-This creates `klack.yaml` — the only file you commit. Edit it:
+This creates `.klack.yml` — the only file you commit. Edit it:
 
 ```yaml
-# klack.yaml
+# .klack.yml
 ticket_source: jira          # jira | github | gitlab | linear | markdown
 pr_tool: gitlab               # gitlab | github
 pr_target_branch: develop      # target branch for MRs/PRs
@@ -208,15 +208,15 @@ Every agent process automatically picks this up — no per-agent configuration n
 
 ### Adding a Ticket Source
 
-1. Set `ticket_source: your-system` in `klack.yaml`
+1. Set `ticket_source: your-system` in `.klack.yml`
 2. Edit `commands/ticket-story.md` — add a section for your system under "## 3. Ticket einlesen"
 3. Edit `commands/ticket-release.md` — add comment posting for your system under "## 5. Ticket-Kommentar"
 
-The agent reads `klack.yaml` and follows the branch for your system. Everything else (story creation, implementation, testing, review) is ticket-source-agnostic.
+The agent reads `.klack.yml` and follows the branch for your system. Everything else (story creation, implementation, testing, review) is ticket-source-agnostic.
 
 ### Adding a CI System
 
-1. Set `ci_tool: your-ci` in `klack.yaml`
+1. Set `ci_tool: your-ci` in `.klack.yml`
 2. Edit `commands/ticket-pipeline.md` — add CLI commands for checking pipeline status and retrying
 
 ### Custom BMAD-Method Skills
@@ -247,7 +247,7 @@ If you're building a custom step, read the protocol. Follow it. The Turmwächter
 ```
 your-project/
 ├── klack.sh                          ← Run this
-├── klack.yaml                        ← Your config
+├── .klack.yml                        ← Your config
 ├── .mcp.json                         ← MCP servers
 ├── .claude/
 │   └── commands/
@@ -285,7 +285,7 @@ Klack doesn't invent its own AI workflows. It stands on the shoulders of the **[
 - tmux-based orchestration with visual status
 - Filesystem message bus for agent communication
 - Automatic CI monitoring and fix loops
-- Interactive ↔ autonomous handoff (`/klack-weiter`)
+- Interactive ↔ autonomous handoff (`/klack-next`)
 
 Without BMAD-Method, each agent would need its own prompt engineering. With it, you get proven workflows out of the box. Klack just runs them faster and in parallel.
 

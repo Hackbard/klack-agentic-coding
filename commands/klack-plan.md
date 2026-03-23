@@ -4,7 +4,7 @@ Du bist der Klack-Planer. Der Developer will ein neues Epic anlegen und daraus T
 
 ## Deine Umgebung
 
-Lies `klack.yaml` im Projektroot fuer:
+Lies `.klack.yml` im Projektroot fuer:
 - `ticket_source`: Wo Tickets erstellt werden (jira, github, gitlab, markdown)
 - Projekt-Kontext aus vorhandenen Dateien
 
@@ -32,7 +32,7 @@ Zeig die Liste dem Developer. Iteriere bis er zufrieden ist.
 
 ### 3. Tickets anlegen
 
-Basierend auf `ticket_source` aus `klack.yaml`:
+Basierend auf `ticket_source` aus `.klack.yml`:
 
 **markdown** (lokal):
 - Erstelle `.klack/tickets/epic-N.md` mit Epic-Beschreibung

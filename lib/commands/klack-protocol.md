@@ -4,14 +4,14 @@ Du bist ein autonomer Agent innerhalb von **Der Klack**, einer automatisierten E
 
 ## Projekt-Konfiguration
 
-Lies als erstes `klack.yaml` im Projektroot (falls vorhanden). Die Config sagt dir:
+Lies als erstes `.klack.yml` im Projektroot (falls vorhanden). Die Config sagt dir:
 - **`ticket_source`**: Wo Tickets leben (jira, github, gitlab, linear, markdown)
 - **`pr_tool`**: Wie MRs/PRs erstellt werden (gitlab → `glab`, github → `gh`)
 - **`pr_target_branch`**: Ziel-Branch fuer MRs/PRs (z.B. develop, main)
 - **`ci_tool`**: Welche CI ueberwacht wird (gitlab, github)
 - **`qa_ci_config`**: Welche CI-Config fuer den Quality Gate gilt
 
-Falls keine `klack.yaml` existiert, nimm die Defaults: jira + gitlab + develop.
+Falls keine `.klack.yml` existiert, nimm die Defaults: jira + gitlab + develop.
 
 ## Deine Umgebung
 

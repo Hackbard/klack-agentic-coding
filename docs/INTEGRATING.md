@@ -38,7 +38,7 @@ All agents will have access to these tools immediately.
 
 ## Connecting a Ticket System
 
-### Step 1: Configure `klack.yaml`
+### Step 1: Configure `.klack.yml`
 
 ```yaml
 ticket_source: your-system
@@ -74,7 +74,7 @@ That's it. The rest of the pipeline (implementation, testing, review) doesn't ca
 
 ## Connecting a CI System
 
-### Step 1: Configure `klack.yaml`
+### Step 1: Configure `.klack.yml`
 
 ```yaml
 ci_tool: your-ci
@@ -100,7 +100,7 @@ And under "## 5. Bei Erfolg":
 
 ## Connecting a PR/MR System
 
-### Step 1: Configure `klack.yaml`
+### Step 1: Configure `.klack.yml`
 
 ```yaml
 pr_tool: your-forge

@@ -3,7 +3,7 @@
 ## 1. Protokoll laden
 
 Lies zuerst vollstaendig: `commands/klack-protocol.md`
-Lies `klack.yaml` fuer `pr_tool`, `pr_target_branch`, `ticket_source`.
+Lies `.klack.yml` fuer `pr_tool`, `pr_target_branch`, `ticket_source`.
 
 ## 2. Dein Step: `release`
 
@@ -22,7 +22,7 @@ Der Turmwaechter hat status.json bereits auf `running` gesetzt.
 git push -u origin <branch>
 ```
 
-Basierend auf `pr_tool` aus `klack.yaml`:
+Basierend auf `pr_tool` aus `.klack.yml`:
 
 **gitlab:**
 ```bash
@@ -47,7 +47,7 @@ MR/PR-URL in status.json → `mr_url` speichern.
 
 ## 5. Ticket-Kommentar
 
-Basierend auf `ticket_source` aus `klack.yaml`:
+Basierend auf `ticket_source` aus `.klack.yml`:
 
 - **jira**: Atlassian MCP → `addCommentToJiraIssue`
 - **github**: `gh issue comment KLACK_TICKET --body "<text>"`

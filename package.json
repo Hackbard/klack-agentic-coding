@@ -8,7 +8,7 @@
   "files": [
     "bin/",
     "lib/",
-    "klack.yaml.example",
+    ".klack.yml.example",
     "README.md"
   ],
   "keywords": [

@@ -3,7 +3,7 @@
 ## 1. Protokoll laden
 
 Lies zuerst vollstaendig: `commands/klack-protocol.md`
-Lies `klack.yaml` fuer `ci_tool` und `pr_tool`.
+Lies `.klack.yml` fuer `ci_tool` und `pr_tool`.
 
 ## 2. Dein Step: `pipeline`
 

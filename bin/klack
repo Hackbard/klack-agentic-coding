@@ -32,7 +32,7 @@ if [[ "${1:-}" == "help" || "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
 klack — Parallel agentic coding. One command to orchestrate them all.
 
 Commands:
-  klack init                          Create klack.yaml in current directory
+  klack init                          Create .klack.yml in current directory
   klack epic                          Plan an epic interactively (BMAD-Method)
   klack epic <file>                   Plan an epic from a source document
   klack new epic "Name"               Quick-create a local epic
@@ -55,14 +55,14 @@ EOF
   exit 0
 fi
 
-# --- Init: Copy klack.yaml.example if no config exists ----------------------
+# --- Init: Copy .klack.yml.example if no config exists ----------------------
 
 if [[ "${1:-}" == "init" ]]; then
-  if [[ -f "klack.yaml" ]]; then
-    echo "klack.yaml already exists."
+  if [[ -f ".klack.yml" ]]; then
+    echo ".klack.yml already exists."
   else
-    cp "$KLACK_LIB/../klack.yaml.example" ./klack.yaml
-    echo "Created klack.yaml — edit it for your project."
+    cp "$KLACK_LIB/../.klack.yml.example" ./.klack.yml
+    echo "Created .klack.yml — edit it for your project."
   fi
   exit 0
 fi
@@ -293,8 +293,8 @@ mkdir -p "$KLACK_ROOT/.claude/commands"
 cp "$KLACK_LIB/commands/"*.md "$KLACK_ROOT/.claude/commands/"
 
 # Sync skills
-mkdir -p "$KLACK_ROOT/.claude/skills/klack-weiter"
-cp "$KLACK_LIB/skills/klack-weiter/SKILL.md" "$KLACK_ROOT/.claude/skills/klack-weiter/"
+mkdir -p "$KLACK_ROOT/.claude/skills/klack-next"
+cp "$KLACK_LIB/skills/klack-next/SKILL.md" "$KLACK_ROOT/.claude/skills/klack-next/"
 
 # Ensure .gitignore has our entries
 GITIGNORE="$KLACK_ROOT/.gitignore"

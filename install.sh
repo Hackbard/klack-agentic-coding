@@ -88,10 +88,10 @@ else
 fi
 
 # Klack skills
-if [[ -d "$SCRIPT_DIR/.claude/skills/klack-weiter" ]]; then
-  mkdir -p "$TARGET/.claude/skills/klack-weiter"
-  cp "$SCRIPT_DIR/.claude/skills/klack-weiter/SKILL.md" "$TARGET/.claude/skills/klack-weiter/"
-  echo "  Copied klack-weiter skill"
+if [[ -d "$SCRIPT_DIR/.claude/skills/klack-next" ]]; then
+  mkdir -p "$TARGET/.claude/skills/klack-next"
+  cp "$SCRIPT_DIR/.claude/skills/klack-next/SKILL.md" "$TARGET/.claude/skills/klack-next/"
+  echo "  Copied klack-next skill"
 fi
 
 # --- Update .gitignore -------------------------------------------------------
