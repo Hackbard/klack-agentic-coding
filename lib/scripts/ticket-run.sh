@@ -53,7 +53,22 @@ log_activity() {
   echo "$(date +%H:%M:%S)  [$TICKET]  $msg" >> "$KLACK_ROOT/.klack/activity.log"
 }
 
+notify_attention() {
+  local title="$1"
+  local body="$2"
+  printf '\a'
+  if command -v osascript &>/dev/null; then
+    osascript -e "display notification \"$body\" with title \"$title\"" 2>/dev/null || true
+  fi
+  log_activity "ATTENTION: $body"
+}
+
 check_waiting() {
+  if [[ -f "$KLACK_DIR/waiting.flag" ]]; then
+    local question_preview
+    question_preview="$(head -1 "$KLACK_DIR/question.txt" 2>/dev/null || echo "Input needed")"
+    notify_attention "Klack — $TICKET" "$question_preview"
+  fi
   while [[ -f "$KLACK_DIR/waiting.flag" ]]; do
     update_status "$current_step" "waiting" "Waiting for developer input"
     log_activity "Waiting for answer..."
@@ -90,6 +105,7 @@ EOQUEST
   update_status "$step" "waiting" "FEHLER in $step — warte auf Entscheidung"
   log_activity "FEHLER: $step exit $exit_code — warte auf Entscheidung"
   touch "$KLACK_DIR/waiting.flag"
+  notify_attention "Klack — $TICKET" "Step '$step' fehlgeschlagen (exit $exit_code)"
 
   while [[ -f "$KLACK_DIR/waiting.flag" ]]; do
     sleep 5
@@ -305,6 +321,8 @@ KLACK_DIR: $KLACK_DIR"
           "${MCP_CONFIG_ARGS[@]}" \
           -c
         set -e
+
+        notify_attention "Klack — $TICKET" "Interaktiver Step '$current_step' beendet. Entscheidung noetig."
 
         # Check if developer triggered /klack-next (resume.md exists)
         if [[ -f "$KLACK_DIR/resume.md" ]]; then

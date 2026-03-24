@@ -111,6 +111,7 @@ development_status:
   # Epic 10: Klack-Next — Interactive-to-Autonomous Handoff
   epic-10: in-progress
   10-1-interactive-to-autonomous-handoff: done
+  10-2-attention-signals-bell-and-notification: review
   epic-10-retrospective: optional
 
   # Epic 11: npm Packaging & Distribution
