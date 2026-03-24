@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-20
-last_updated: 2026-03-23T00:00:00
+last_updated: 2026-03-24T00:00:00
 project: cc-crew
 project_key: NOKEY
 tracking_system: file-system
@@ -118,3 +118,24 @@ development_status:
   epic-11: in-progress
   11-1-npm-packaging-and-distribution: review
   epic-11-retrospective: optional
+
+  # Epic 12: Smart Initialization
+  epic-12: backlog
+  12-1-project-initialization-check-and-ticket-system-wizard: backlog
+  12-2-bmad-initialization-check: backlog
+  epic-12-retrospective: optional
+
+  # Epic 13: Hauptturm Layout v2 — Worktree-Centric Sidebar
+  epic-13: backlog
+  13-1-new-3-zone-tmux-layout: backlog
+  13-2-worktree-sidebar-with-status-polling: backlog
+  13-3-worktree-status-derivation-from-sprint-status-yaml: backlog
+  epic-13-retrospective: optional
+
+  # Epic 14: BMAD Workflow Launcher & Autonomy Control
+  epic-14: backlog
+  14-1-tmux-popup-workflow-picker: backlog
+  14-2-per-worktree-autonomy-config: backlog
+  14-3-phase-aware-workflow-orchestration: backlog
+  14-4-planning-to-implementation-transition: backlog
+  epic-14-retrospective: optional
