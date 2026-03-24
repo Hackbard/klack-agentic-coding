@@ -46,6 +46,7 @@ Commands:
   klack new ticket <epic#> "Name"     Quick-create a local ticket
   klack list                          List local tickets
   klack feat ID [fix ID ...]          Start pipeline for tickets (parallel)
+  klack test [scenario]               Run pipeline against test fixture
   klack                               Restore previous session
 
 Options:
@@ -289,6 +290,61 @@ if [[ "${1:-}" == "list" ]]; then
     printf "  %-12s %-8s %s\n" "$id" "[$status]" "$title"
   done
   exit 0
+fi
+
+# --- Test: Run pipeline against Happy API test fixture ----------------------
+
+if [[ "${1:-}" == "test" ]]; then
+  shift
+  scenario="${1:-default}"
+
+  FIXTURE_DIR="$(dirname "$REAL_BIN")/../test/fixtures/happy-api"
+  if [[ ! -d "$FIXTURE_DIR" ]]; then
+    echo "ERROR: Test fixture not found at $FIXTURE_DIR" >&2
+    exit 1
+  fi
+
+  TEST_DIR="/tmp/klack-test-$(date +%s)"
+  echo "Setting up test project in $TEST_DIR..."
+
+  cp -r "$FIXTURE_DIR" "$TEST_DIR"
+  cd "$TEST_DIR"
+
+  # Initialize as git repo
+  git init -b main
+  git add -A
+  git commit -m "init: Happy API test fixture"
+
+  echo "Test project ready: $TEST_DIR"
+  echo ""
+
+  case "$scenario" in
+    default)
+      echo "Running default test: feat E1-001 (Implement /api/happy/{id})"
+      echo ""
+      exec "$REAL_BIN" feat E1-001
+      ;;
+    conflict)
+      echo "Running conflict test: feat E1-002 feat E1-003 (parallel with shared dependency)"
+      echo ""
+      exec "$REAL_BIN" feat E1-001 feat E1-002 feat E1-003
+      ;;
+    review-block)
+      echo "Running review-block test: feat E1-004 (triggers security findings)"
+      echo ""
+      exec "$REAL_BIN" feat E1-001 feat E1-004
+      ;;
+    all)
+      echo "Running all test tickets: E1-001 through E1-004"
+      echo ""
+      exec "$REAL_BIN" feat E1-001 feat E1-002 feat E1-003 feat E1-004
+      ;;
+    *)
+      echo "Unknown test scenario: $scenario" >&2
+      echo "Available: default, conflict, review-block, all" >&2
+      exit 1
+      ;;
+  esac
 fi
 
 # --- Setup .klack/ runtime directory -----------------------------------------

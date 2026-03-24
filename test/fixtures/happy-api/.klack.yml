@@ -1,0 +1,6 @@
+# Klack config for Happy API test fixture
+ticket_source: markdown
+pr_tool: github
+pr_target_branch: main
+qa_ci_config: .github/workflows/ci.yml
+ci_tool: github

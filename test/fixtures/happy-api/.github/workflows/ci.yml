@@ -1,0 +1,23 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: pcov
+      - run: composer install --no-interaction --prefer-dist
+      - name: PHP-CS-Fixer
+        run: composer lint
+      - name: PHPStan
+        run: composer analyse
+      - name: PEST Tests
+        run: composer test:coverage
