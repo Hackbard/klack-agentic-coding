@@ -291,15 +291,15 @@ KLACK_DIR: $KLACK_DIR"
 
     agent_log="$KLACK_DIR/agent-output.log"
 
-    # Run Claude autonomously — visible in tmux window for monitoring
-    # Developer interacts via Hauptturm (Ruecksignal), not directly in this window
+    # Run Claude autonomously — output tee'd to agent-output.log for livelog panel
+    > "$agent_log"
     set +e
     ANTHROPIC_MODEL="$step_model" claude \
       --dangerously-skip-permissions \
       --chrome \
       "${MCP_CONFIG_ARGS[@]}" \
-      -p "$prompt"
-    claude_exit=$?
+      -p "$prompt" 2>&1 | tee "$agent_log"
+    claude_exit=${PIPESTATUS[0]}
     set -e
 
     if [[ $claude_exit -eq 0 ]]; then

@@ -74,28 +74,20 @@ while true; do
   capture_lines=$((rows - 4))
   [[ $capture_lines -lt 10 ]] && capture_lines=10
 
-  if tmux has-session -t "$KLACK_SESSION" 2>/dev/null && \
-     tmux list-windows -t "$KLACK_SESSION" -F '#{window_name}' 2>/dev/null | grep -qx "$ticket"; then
-    # Capture live output from ticket's tmux window
-    pane_output="$(tmux capture-pane -t "$KLACK_SESSION:${ticket}" -p -S -${capture_lines} 2>/dev/null || echo "")"
+  agent_log="$sig/agent-output.log"
 
-    if [[ -n "$pane_output" ]]; then
-      printf "${CLR_MUTE}LIVE OUTPUT${CLR_RST}"; tput el 2>/dev/null || true; printf "\n"
-      echo "$pane_output" | tail -${capture_lines} | while IFS= read -r line; do
-        # Truncate to pane width
-        printf "%.${cols}s" "$line"; tput el 2>/dev/null || true; printf "\n"
-      done
-    else
-      printf "${CLR_MUTE}(kein Output)${CLR_RST}"; tput el 2>/dev/null || true; printf "\n"
-    fi
-  else
-    # No tmux window — fall back to activity log
+  if [[ -f "$agent_log" && -s "$agent_log" ]]; then
+    printf "${CLR_MUTE}LIVE OUTPUT${CLR_RST}"; tput el 2>/dev/null || true; printf "\n"
+    tail -${capture_lines} "$agent_log" 2>/dev/null | while IFS= read -r line; do
+      printf "%.${cols}s" "$line"; tput el 2>/dev/null || true; printf "\n"
+    done
+  elif [[ -f "$KLACK_ROOT/.klack/activity.log" ]]; then
     printf "${CLR_MUTE}ACTIVITY${CLR_RST}"; tput el 2>/dev/null || true; printf "\n"
-    if [[ -f "$KLACK_ROOT/.klack/activity.log" ]]; then
-      grep "\[$ticket\]" "$KLACK_ROOT/.klack/activity.log" 2>/dev/null | tail -${capture_lines} | while IFS= read -r line; do
-        printf "${CLR_MUTE}%.${cols}s${CLR_RST}" "$line"; tput el 2>/dev/null || true; printf "\n"
-      done
-    fi
+    grep "\[$ticket\]" "$KLACK_ROOT/.klack/activity.log" 2>/dev/null | tail -${capture_lines} | while IFS= read -r line; do
+      printf "${CLR_MUTE}%.${cols}s${CLR_RST}" "$line"; tput el 2>/dev/null || true; printf "\n"
+    done
+  else
+    printf "${CLR_MUTE}(kein Output)${CLR_RST}"; tput el 2>/dev/null || true; printf "\n"
   fi
 
   # --- Errors ---
