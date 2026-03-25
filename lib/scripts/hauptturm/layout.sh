@@ -3,8 +3,7 @@ set -euo pipefail
 
 # ============================================================================
 # layout.sh — Hauptturm Layout
-# Fixed layout: Header (3 lines) | Claude (main) | Worktree Sidebar (right)
-# No layout switching — one layout to rule them all.
+# Header (3 lines) | Status (ticket cards) | Claude (main) | Sidebar (right)
 # ============================================================================
 
 KLACK_ROOT="${KLACK_ROOT:?KLACK_ROOT not set}"
@@ -28,14 +27,18 @@ done
 tmux send-keys -t "$KLACK_SESSION:hauptturm.0" C-c 2>/dev/null || true
 tmux respawn-pane -t "$KLACK_SESSION:hauptturm.0" -k "$PANE_CMD bash $SCRIPTS/header.sh" 2>/dev/null
 
-# Split below header: claude pane (main)
-tmux split-window -v -t "$KLACK_SESSION:hauptturm.0" "$PANE_CMD bash $SCRIPTS/claude-pane.sh"
+# Split: status cards below header
+tmux split-window -v -t "$KLACK_SESSION:hauptturm.0" "$PANE_CMD bash $SCRIPTS/status.sh"
 
-# Split claude pane horizontally: sidebar on the right (25%)
-tmux split-window -h -p 25 -t "$KLACK_SESSION:hauptturm.1" "$PANE_CMD bash $SCRIPTS/sidebar.sh"
+# Split: claude pane below status (gets most space)
+tmux split-window -v -p 70 -t "$KLACK_SESSION:hauptturm.1" "$PANE_CMD bash $SCRIPTS/claude-pane.sh"
 
-# Header = 3 lines (title + stats + border)
+# Split: worktree sidebar on the right of claude pane (25%)
+tmux split-window -h -p 25 -t "$KLACK_SESSION:hauptturm.2" "$PANE_CMD bash $SCRIPTS/sidebar.sh"
+
+# Sizes: header=3, status=8 (compact cards), rest=claude+sidebar
 tmux resize-pane -t "$KLACK_SESSION:hauptturm.0" -y 3
+tmux resize-pane -t "$KLACK_SESSION:hauptturm.1" -y 8
 
 # Focus claude pane
-tmux select-pane -t "$KLACK_SESSION:hauptturm.1"
+tmux select-pane -t "$KLACK_SESSION:hauptturm.2"
