@@ -108,6 +108,7 @@ if [[ "${1:-}" == "epic" ]]; then
     fi
   fi
 
+  export PLAN_PROMPT
   PLAN_PROMPT="$(cat "$KLACK_LIB/commands/klack-plan.md")"
 
   # Build source context if file provided
@@ -167,8 +168,8 @@ EPIC_APPEND
 
   # Init Hauptturm layout
   touch "$KLACK_ROOT/.klack/activity.log"
-  KLACK_ROOT="$KLACK_ROOT" KLACK_SESSION="$KLACK_SESSION" \
-    bash "$KLACK_ROOT/.klack/scripts/hauptturm/layout.sh" 2>/dev/null || true
+  export KLACK_ROOT KLACK_SESSION
+  bash "$KLACK_ROOT/.klack/scripts/hauptturm/layout.sh" 2>/dev/null || true
 
   # Send the BMAD epic command to the Claude pane after a delay
   # Find the Claude pane (last one in hauptturm)
@@ -195,7 +196,7 @@ if [[ "${1:-}" == "new" ]]; then
   case "$subcommand" in
     epic)
       # Find next epic number
-      last_epic=$(ls "$TICKETS_DIR"/epic-*.md 2>/dev/null | sort -V | tail -1 | sed 's/.*epic-\([0-9]*\)\.md/\1/' || echo "0")
+      last_epic=$(find "$TICKETS_DIR" -maxdepth 1 -name 'epic-*.md' 2>/dev/null | sort -V | tail -1 | sed 's/.*epic-\([0-9]*\)\.md/\1/' || echo "0")
       [[ -z "$last_epic" ]] && last_epic=0
       next_epic=$((last_epic + 1))
       epic_file="$TICKETS_DIR/epic-${next_epic}.md"
@@ -226,7 +227,7 @@ EOF
 
       # Find next ticket number in this epic
       prefix="E${epic_num}"
-      last_num=$(ls "$TICKETS_DIR"/${prefix}-*.md 2>/dev/null | sort -V | tail -1 | sed "s/.*${prefix}-\([0-9]*\)\.md/\1/" || echo "0")
+      last_num=$(find "$TICKETS_DIR" -maxdepth 1 -name "${prefix}-*.md" 2>/dev/null | sort -V | tail -1 | sed "s/.*${prefix}-\([0-9]*\)\.md/\1/" || echo "0")
       [[ -z "$last_num" ]] && last_num=0
       next_num=$(printf "%03d" $((10#$last_num + 1)))
       ticket_id="${prefix}-${next_num}"
