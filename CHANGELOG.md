@@ -1,3 +1,11 @@
+## [1.0.1](https://github.com/Hackbard/klack-agentic-coding/compare/v1.0.0...v1.0.1) (2026-03-25)
+
+
+### Bug Fixes
+
+* **packaging:** remove rebase artifact from package.json ([669b113](https://github.com/Hackbard/klack-agentic-coding/commit/669b113223c1b0f6974ce8518faa280e3afd3822))
+* **packaging:** rename to @webkult/klack (npm name collision with klaw) ([fc3f5ad](https://github.com/Hackbard/klack-agentic-coding/commit/fc3f5ad2f41fb6c50a05ff47cd02fc989af0717b))
+
 # 1.0.0 (2026-03-25)
 
 

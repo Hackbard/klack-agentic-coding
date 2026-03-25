@@ -1,6 +1,6 @@
 {
   "name": "@webkult/klack",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Parallel agentic coding. One command to orchestrate them all.",
   "bin": {
     "klack": "./bin/klack"
