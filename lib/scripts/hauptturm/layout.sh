@@ -3,8 +3,9 @@ set -euo pipefail
 
 # ============================================================================
 # layout.sh — Hauptturm Layout
-# Header (3 lines) | Status cards (8 lines) | Claude (main, left) |
-# Live Log (right top) | Worktrees (right bottom)
+# Grid: 12 columns. Claude=7, Right side=5.
+# Header (1 line) | Status cards | Claude (left 58%) |
+# Live Log (right top 60%) | Worktrees (right bottom 40%)
 # ============================================================================
 
 KLACK_ROOT="${KLACK_ROOT:?KLACK_ROOT not set}"
@@ -24,25 +25,27 @@ while [[ "$count" -gt 1 ]]; do
   count=$((count - 1))
 done
 
-# Pane 0 = header
+# Pane 0 = header (1 line)
 tmux send-keys -t "$KLACK_SESSION:hauptturm.0" C-c 2>/dev/null || true
 tmux respawn-pane -t "$KLACK_SESSION:hauptturm.0" -k "$PANE_CMD bash $SCRIPTS/header.sh" 2>/dev/null
 
 # Split: status cards below header
 tmux split-window -v -t "$KLACK_SESSION:hauptturm.0" "$PANE_CMD bash $SCRIPTS/status.sh"
 
-# Split: claude pane below status (main interaction area)
-tmux split-window -v -p 70 -t "$KLACK_SESSION:hauptturm.1" "$PANE_CMD bash $SCRIPTS/claude-pane.sh"
+# Split: claude pane below status (gets most vertical space)
+tmux split-window -v -p 75 -t "$KLACK_SESSION:hauptturm.1" "$PANE_CMD bash $SCRIPTS/claude-pane.sh"
 
-# Split: right sidebar from claude pane (30%)
-tmux split-window -h -p 30 -t "$KLACK_SESSION:hauptturm.2" "$PANE_CMD bash $SCRIPTS/livelog.sh"
+# Split: right side from claude pane — 5/12 = 42%
+tmux split-window -h -p 42 -t "$KLACK_SESSION:hauptturm.2" "$PANE_CMD bash $SCRIPTS/livelog.sh"
 
-# Split: worktrees below livelog in the right sidebar (40% bottom)
+# Split: worktrees below livelog — 40% of right side
 tmux split-window -v -p 40 -t "$KLACK_SESSION:hauptturm.3" "$PANE_CMD bash $SCRIPTS/sidebar.sh"
 
-# Sizes
-tmux resize-pane -t "$KLACK_SESSION:hauptturm.0" -y 3
-tmux resize-pane -t "$KLACK_SESSION:hauptturm.1" -y 8
+# Header = 1 line only
+tmux resize-pane -t "$KLACK_SESSION:hauptturm.0" -y 1
+
+# Status cards = 5 lines (compact)
+tmux resize-pane -t "$KLACK_SESSION:hauptturm.1" -y 5
 
 # Focus claude pane
 tmux select-pane -t "$KLACK_SESSION:hauptturm.2"
