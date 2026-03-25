@@ -110,6 +110,27 @@ layout_threezone() {
   tmux select-pane -t "$KLACK_SESSION:hauptturm.3"
 }
 
+layout_worktree() {
+  # 3 zones: header(top,2lines) | main(center-left) + sidebar(right,35cols)
+  kill_extra_panes
+
+  # Pane 0 becomes header
+  tmux send-keys -t "$KLACK_SESSION:hauptturm.0" C-c 2>/dev/null || true
+  tmux respawn-pane -t "$KLACK_SESSION:hauptturm.0" -k "$PANE_CMD bash $SCRIPTS/header.sh" 2>/dev/null
+
+  # Split below header for main pane (Claude chat / shell)
+  tmux split-window -v -t "$KLACK_SESSION:hauptturm.0" "$PANE_CMD bash $SCRIPTS/claude-pane.sh"
+
+  # Split main pane horizontally for sidebar on the right
+  tmux split-window -h -p 25 -t "$KLACK_SESSION:hauptturm.1" "$PANE_CMD bash $SCRIPTS/sidebar.sh"
+
+  # Resize header to 2 lines
+  tmux resize-pane -t "$KLACK_SESSION:hauptturm.0" -y 2
+
+  # Focus the main pane
+  tmux select-pane -t "$KLACK_SESSION:hauptturm.1"
+}
+
 layout_dashboard() {
   # N+3 panes: header + 1 per ticket + log(compact) + input
   kill_extra_panes
@@ -147,6 +168,7 @@ case "$TARGET" in
   fullchat)   layout_fullchat ;;
   twocol)     layout_twocol ;;
   threezone)  layout_threezone ;;
+  worktree)   layout_worktree ;;
   dashboard)  layout_dashboard ;;
   *)
     echo "ERROR: Unknown layout '$TARGET'" >&2

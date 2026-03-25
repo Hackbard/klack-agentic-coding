@@ -126,10 +126,10 @@ development_status:
   epic-12-retrospective: optional
 
   # Epic 13: Hauptturm Layout v2 — Worktree-Centric Sidebar
-  epic-13: backlog
-  13-1-new-3-zone-tmux-layout: backlog
-  13-2-worktree-sidebar-with-status-polling: backlog
-  13-3-worktree-status-derivation-from-sprint-status-yaml: backlog
+  epic-13: in-progress
+  13-1-new-3-zone-tmux-layout: review
+  13-2-worktree-sidebar-with-status-polling: review
+  13-3-worktree-status-derivation-from-sprint-status-yaml: review
   epic-13-retrospective: optional
 
   # Epic 14: BMAD Workflow Launcher & Autonomy Control
