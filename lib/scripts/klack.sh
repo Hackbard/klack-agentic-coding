@@ -64,7 +64,7 @@ init_hauptturm() {
   # Initialize default layout (hybrid) in the hauptturm window
   local layout_script="$KLACK_ROOT/.klack/scripts/hauptturm/layout.sh"
   if [[ -x "$layout_script" ]]; then
-    KLACK_ROOT="$KLACK_ROOT" KLACK_SESSION="$KLACK_SESSION" "$layout_script" hybrid 2>/dev/null || true
+    KLACK_ROOT="$KLACK_ROOT" KLACK_SESSION="$KLACK_SESSION" "$layout_script" worktree 2>/dev/null || true
   fi
 }
 

@@ -21,6 +21,16 @@ tmux set-option -t "$KLACK_SESSION" default-shell "/bin/zsh" 2>/dev/null || true
 # Pane command prefix: sets env vars, runs script in login zsh
 PANE_CMD="export KLACK_ROOT='$KLACK_ROOT' KLACK_SESSION='$KLACK_SESSION';"
 
+# Focus the pane running claude-pane.sh (the main interaction pane)
+focus_claude_pane() {
+  local pane_id
+  pane_id="$(tmux list-panes -t "$KLACK_SESSION:hauptturm" -F '#{pane_index} #{pane_start_command}' 2>/dev/null \
+    | grep 'claude-pane' | head -1 | awk '{print $1}')" || true
+  if [[ -n "$pane_id" ]]; then
+    tmux select-pane -t "$KLACK_SESSION:hauptturm.${pane_id}"
+  fi
+}
+
 # Kill all panes except pane 0 in hauptturm window
 kill_extra_panes() {
   local count
@@ -54,7 +64,7 @@ layout_hybrid() {
   # Resize header to 1 line
   tmux resize-pane -t "$KLACK_SESSION:hauptturm.0" -y 1
 
-  tmux select-pane -t "$KLACK_SESSION:hauptturm.3"
+  focus_claude_pane
 }
 
 layout_fullchat() {
@@ -68,7 +78,7 @@ layout_fullchat() {
   tmux split-window -v -t "$KLACK_SESSION:hauptturm.0" "$PANE_CMD bash $SCRIPTS/log.sh"
 
   tmux resize-pane -t "$KLACK_SESSION:hauptturm.0" -y 1
-  tmux select-pane -t "$KLACK_SESSION:hauptturm.2"
+  focus_claude_pane
 }
 
 layout_twocol() {
@@ -89,7 +99,7 @@ layout_twocol() {
   tmux split-window -h -p 35 -t "$KLACK_SESSION:hauptturm.1" "$PANE_CMD bash $SCRIPTS/status.sh"
 
   tmux resize-pane -t "$KLACK_SESSION:hauptturm.0" -y 1
-  tmux select-pane -t "$KLACK_SESSION:hauptturm.3"
+  focus_claude_pane
 }
 
 layout_threezone() {
@@ -107,7 +117,7 @@ layout_threezone() {
   # Status band gets ~25% of remaining space
   tmux resize-pane -t "$KLACK_SESSION:hauptturm.1" -y 6
 
-  tmux select-pane -t "$KLACK_SESSION:hauptturm.3"
+  focus_claude_pane
 }
 
 layout_worktree() {
@@ -127,8 +137,7 @@ layout_worktree() {
   # Resize header to 2 lines
   tmux resize-pane -t "$KLACK_SESSION:hauptturm.0" -y 2
 
-  # Focus the main pane
-  tmux select-pane -t "$KLACK_SESSION:hauptturm.1"
+  focus_claude_pane
 }
 
 layout_dashboard() {
@@ -156,10 +165,7 @@ layout_dashboard() {
     idx=$((idx + 1))
   done
 
-  # Claude pane is the last one
-  local total_panes
-  total_panes="$(tmux list-panes -t "$KLACK_SESSION:hauptturm" | wc -l | tr -d ' ')"
-  tmux select-pane -t "$KLACK_SESSION:hauptturm.$((total_panes - 1))"
+  focus_claude_pane
 }
 
 # Execute layout
