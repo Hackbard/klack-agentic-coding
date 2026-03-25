@@ -310,6 +310,12 @@ if [[ "${1:-}" == "test" ]]; then
   cp -r "$FIXTURE_DIR" "$TEST_DIR"
   cd "$TEST_DIR"
 
+  # Install PHP dependencies if composer available
+  if command -v composer &>/dev/null; then
+    echo "Installing PHP dependencies..."
+    composer install --no-interaction --quiet 2>/dev/null || echo "Warning: composer install failed (PHP tools may not work)"
+  fi
+
   # Initialize as git repo
   git init -b main
   git add -A
