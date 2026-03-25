@@ -27,7 +27,7 @@ get_active_ticket() {
 }
 
 while true; do
-  clear
+  tput cup 0 0 2>/dev/null || true
   cols="$(tput cols 2>/dev/null || echo 40)"
   now="$(date +%H:%M:%S)"
   ticket="$(get_active_ticket)"
@@ -89,6 +89,9 @@ while true; do
       printf " ${CLR_ERR}%s${CLR_RST}\n" "$line"
     done
   fi
+
+  # Clear any leftover lines from previous render
+  tput ed 2>/dev/null || true
 
   sleep 2
 done

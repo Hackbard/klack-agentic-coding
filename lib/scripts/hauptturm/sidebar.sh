@@ -57,7 +57,7 @@ status_icon() {
 # --- Main Loop (outputs to stdout, tmux pane scrolls naturally) -------------
 
 while true; do
-  clear
+  tput cup 0 0 2>/dev/null || true
   cols="$(tput cols 2>/dev/null || echo 35)"
   now="$(date +%H:%M:%S)"
   sprint_file="$(find_sprint_status)"
@@ -132,11 +132,14 @@ while true; do
   fi
 
   # Footer
-  printf "${CLR_MUTE}$(printf '─%.0s' $(seq 1 "$cols"))${CLR_RST}\n"
+  printf "${CLR_MUTE}$(printf '─%.0s' $(seq 1 "$cols"))${CLR_RST}"; tput el 2>/dev/null || true; printf "\n"
   if [[ -z "$sprint_file" ]]; then
-    printf " ${CLR_MUTE}kein sprint-status.yaml${CLR_RST}\n"
+    printf " ${CLR_MUTE}kein sprint-status.yaml${CLR_RST}"; tput el 2>/dev/null || true; printf "\n"
   fi
-  printf " ${CLR_MUTE}aktualisiert ${now}${CLR_RST}\n"
+  printf " ${CLR_MUTE}aktualisiert ${now}${CLR_RST}"; tput el 2>/dev/null || true; printf "\n"
+
+  # Clear any leftover lines from previous render
+  tput ed 2>/dev/null || true
 
   sleep 5
 done
