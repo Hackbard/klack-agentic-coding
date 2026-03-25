@@ -1,6 +1,6 @@
 {
   "name": "klack",
-  "version": "0.0.0-development",
+  "version": "1.0.0",
   "description": "Parallel agentic coding. One command to orchestrate them all.",
   "bin": {
     "klack": "./bin/klack"
