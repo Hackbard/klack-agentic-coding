@@ -353,10 +353,71 @@ if [[ "${1:-}" == "test" ]]; then
   esac
 fi
 
-# --- Setup .klack/ runtime directory -----------------------------------------
+# --- Smart Initialization ---------------------------------------------------
 
 KLACK_ROOT="$(pwd)"
 export KLACK_ROOT
+
+if [[ ! -f "$KLACK_ROOT/.klack.yml" ]]; then
+  echo ""
+  echo "Willkommen bei Klack! Dieses Projekt ist noch nicht initialisiert."
+  echo ""
+  echo "Welches Ticket-System nutzt du?"
+  echo "  1) Jira"
+  echo "  2) GitLab"
+  echo "  3) GitHub"
+  echo "  4) Linear"
+  echo "  5) Markdown (lokal)"
+  echo ""
+  printf "Auswahl [1-5]: "
+  read -r ts_choice
+
+  case "$ts_choice" in
+    1) ts="jira" ;;
+    2) ts="gitlab" ;;
+    3) ts="github" ;;
+    4) ts="linear" ;;
+    5|*) ts="markdown" ;;
+  esac
+
+  # Auto-detect PR tool and CI tool from git remote
+  pr_tool="github"
+  ci_tool="github"
+  pr_target="main"
+  remote_url="$(git config --get remote.origin.url 2>/dev/null || echo "")"
+  if [[ "$remote_url" == *"gitlab"* ]]; then
+    pr_tool="gitlab"
+    ci_tool="gitlab"
+    pr_target="develop"
+  fi
+
+  # Extra Jira config
+  jira_line=""
+  if [[ "$ts" == "jira" ]]; then
+    printf "Jira Projekt-Key (z.B. IN, PROJ): "
+    read -r jira_key
+    [[ -n "$jira_key" ]] && jira_line="jira_project: $jira_key"
+  fi
+
+  cat > "$KLACK_ROOT/.klack.yml" <<EOYML
+ticket_source: $ts
+pr_tool: $pr_tool
+pr_target_branch: $pr_target
+qa_ci_config: none
+ci_tool: $ci_tool
+${jira_line}
+EOYML
+
+  echo ""
+  echo ".klack.yml erstellt (ticket_source: $ts, pr_tool: $pr_tool)"
+fi
+
+# BMAD check
+if [[ ! -d "$KLACK_ROOT/_bmad" ]]; then
+  echo "Note: BMAD nicht initialisiert. Fuer volle Pipeline-Unterstuetzung: bmad init oder BMAD-Method Skills installieren."
+fi
+
+# --- Setup .klack/ runtime directory -----------------------------------------
 
 mkdir -p "$KLACK_ROOT/.klack/scripts/hauptturm"
 mkdir -p "$KLACK_ROOT/.klack/signale"
@@ -371,9 +432,13 @@ chmod +x "$KLACK_ROOT/.klack/scripts/hauptturm/"*.sh
 mkdir -p "$KLACK_ROOT/.claude/commands"
 cp "$KLACK_LIB/commands/"*.md "$KLACK_ROOT/.claude/commands/"
 
-# Sync skills
-mkdir -p "$KLACK_ROOT/.claude/skills/klack-next"
-cp "$KLACK_LIB/skills/klack-next/SKILL.md" "$KLACK_ROOT/.claude/skills/klack-next/"
+# Sync skills (all from lib/skills/)
+for skill_dir in "$KLACK_LIB/skills"/*/; do
+  [[ -d "$skill_dir" ]] || continue
+  skill_name="$(basename "$skill_dir")"
+  mkdir -p "$KLACK_ROOT/.claude/skills/$skill_name"
+  cp "$skill_dir"* "$KLACK_ROOT/.claude/skills/$skill_name/" 2>/dev/null || true
+done
 
 # Ensure .gitignore has our entries
 GITIGNORE="$KLACK_ROOT/.gitignore"

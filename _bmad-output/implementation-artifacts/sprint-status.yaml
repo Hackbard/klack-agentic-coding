@@ -120,9 +120,9 @@ development_status:
   epic-11-retrospective: optional
 
   # Epic 12: Smart Initialization
-  epic-12: backlog
-  12-1-project-initialization-check-and-ticket-system-wizard: backlog
-  12-2-bmad-initialization-check: backlog
+  epic-12: done
+  12-1-project-initialization-check-and-ticket-system-wizard: done
+  12-2-bmad-initialization-check: done
   epic-12-retrospective: optional
 
   # Epic 13: Hauptturm Layout v2 — Worktree-Centric Sidebar
