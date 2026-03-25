@@ -371,7 +371,7 @@ cp "$KLACK_LIB/skills/klack-next/SKILL.md" "$KLACK_ROOT/.claude/skills/klack-nex
 
 # Ensure .gitignore has our entries
 GITIGNORE="$KLACK_ROOT/.gitignore"
-ENTRIES=(".klack/signale/" ".klack/session.json" ".klack/activity.log" ".klack/active_theme" ".klack/cmd.fifo" ".klack/scripts/")
+ENTRIES=(".klack/signale/" ".klack/session.json" ".klack/activity.log" ".klack/active_theme" ".klack/active_ticket" ".klack/cmd.fifo" ".klack/scripts/")
 touch "$GITIGNORE"
 for entry in "${ENTRIES[@]}"; do
   grep -qxF "$entry" "$GITIGNORE" 2>/dev/null || echo "$entry" >> "$GITIGNORE"

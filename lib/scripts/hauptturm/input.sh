@@ -167,17 +167,15 @@ json.dump(d, open('$sf', 'w'), indent=2)
   log_activity "Aborted $ticket"
 }
 
-cmd_layout() {
-  local name="$1"
-  case "$name" in
-    hybrid|fullchat|twocol|threezone|dashboard)
-      "$KLACK_ROOT/.klack/scripts/hauptturm/layout.sh" "$name"
-      log_activity "Layout switched to $name"
-      ;;
-    *)
-      log_activity "ERROR: Unknown layout '$name'. Options: hybrid, fullchat, twocol, threezone, dashboard"
-      ;;
-  esac
+cmd_watch() {
+  local ticket="$1"
+  local sig="$KLACK_ROOT/.klack/signale/$ticket"
+  if [[ ! -d "$sig" ]]; then
+    log_activity "ERROR: Unknown ticket $ticket"
+    return
+  fi
+  echo "$ticket" > "$KLACK_ROOT/.klack/active_ticket"
+  log_activity "Live log switched to $ticket"
 }
 
 cmd_theme() {
@@ -216,7 +214,7 @@ cmd_help() {
   log_activity "  error <ticket>          — Show error log"
   log_activity "  retry <ticket>          — Retry from failed step"
   log_activity "  abort <ticket>          — Stop ticket processing"
-  log_activity "  layout <name>           — Switch layout (hybrid/fullchat/twocol/threezone/dashboard)"
+  log_activity "  watch <ticket>          — Switch live log to ticket"
   log_activity "  theme <name>            — Switch colors (unicorn/cylon/kitt/shufflepuck/monochrome)"
   log_activity "  status                  — Force refresh"
   log_activity "  help                    — This message"
@@ -273,9 +271,9 @@ while true; do
       ticket="${1:-}"
       [[ -n "$ticket" ]] && cmd_abort "$ticket" || log_activity "ERROR: Usage: abort <ticket-id>"
       ;;
-    layout)
-      name="${1:-}"
-      [[ -n "$name" ]] && cmd_layout "$name" || log_activity "ERROR: Usage: layout <name>"
+    watch)
+      ticket="${1:-}"
+      [[ -n "$ticket" ]] && cmd_watch "$ticket" || log_activity "ERROR: Usage: watch <ticket-id>"
       ;;
     theme)
       name="${1:-}"
