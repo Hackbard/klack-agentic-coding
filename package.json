@@ -26,13 +26,13 @@
   ],
   "author": "Postmeister",
   "license": "MIT",
-  "homepage": "https://github.com/klack-dev/klack",
+  "homepage": "https://github.com/Hackbard/klack-agentic-coding",
   "repository": {
     "type": "git",
-    "url": "https://github.com/klack-dev/klack"
+    "url": "https://github.com/Hackbard/klack-agentic-coding"
   },
   "bugs": {
-    "url": "https://github.com/klack-dev/klack/issues"
+    "url": "https://github.com/Hackbard/klack-agentic-coding/issues"
   },
   "scripts": {
     "prepublishOnly": "test -n \"$CI\" || (echo 'ERROR: Use semantic-release via CI, not manual npm publish.' && exit 1)"
