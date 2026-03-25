@@ -57,6 +57,11 @@ setup_tmux_session() {
     tmux set-option -t "$KLACK_SESSION" -g pane-border-lines heavy
     tmux set-option -t "$KLACK_SESSION" -g pane-border-format "#{pane_title}"
     tmux set-option -t "$KLACK_SESSION" default-shell "$SHELL"
+
+    # Bind Ctrl-b w to workflow picker popup
+    local picker="$KLACK_ROOT/.klack/scripts/hauptturm/workflow-picker.sh"
+    tmux bind-key -T prefix w display-popup -E -w 45 -h 30 \
+      "export KLACK_ROOT='$KLACK_ROOT' KLACK_SESSION='$KLACK_SESSION'; bash '$picker'"
   fi
 }
 

@@ -133,9 +133,9 @@ development_status:
   epic-13-retrospective: optional
 
   # Epic 14: BMAD Workflow Launcher & Autonomy Control
-  epic-14: backlog
-  14-1-tmux-popup-workflow-picker: backlog
-  14-2-per-worktree-autonomy-config: backlog
-  14-3-phase-aware-workflow-orchestration: backlog
-  14-4-planning-to-implementation-transition: backlog
+  epic-14: in-progress
+  14-1-tmux-popup-workflow-picker: review
+  14-2-per-worktree-autonomy-config: review
+  14-3-phase-aware-workflow-orchestration: review
+  14-4-planning-to-implementation-transition: review
   epic-14-retrospective: optional
