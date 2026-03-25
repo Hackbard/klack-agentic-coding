@@ -168,7 +168,7 @@ EPIC_APPEND
   # Init Hauptturm layout
   touch "$KLACK_ROOT/.klack/activity.log"
   KLACK_ROOT="$KLACK_ROOT" KLACK_SESSION="$KLACK_SESSION" \
-    bash "$KLACK_ROOT/.klack/scripts/hauptturm/layout.sh" hybrid 2>/dev/null || true
+    bash "$KLACK_ROOT/.klack/scripts/hauptturm/layout.sh" 2>/dev/null || true
 
   # Send the BMAD epic command to the Claude pane after a delay
   # Find the Claude pane (last one in hauptturm)
