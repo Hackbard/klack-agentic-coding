@@ -121,21 +121,27 @@ layout_threezone() {
 }
 
 layout_worktree() {
-  # 3 zones: header(top,2lines) | main(center-left) + sidebar(right,35cols)
+  # hybrid + sidebar: header(top) | log+status(center) | claude(bottom) | sidebar(far right)
   kill_extra_panes
 
   # Pane 0 becomes header
   tmux send-keys -t "$KLACK_SESSION:hauptturm.0" C-c 2>/dev/null || true
   tmux respawn-pane -t "$KLACK_SESSION:hauptturm.0" -k "$PANE_CMD bash $SCRIPTS/header.sh" 2>/dev/null
 
-  # Split below header for main pane (Claude chat / shell)
-  tmux split-window -v -t "$KLACK_SESSION:hauptturm.0" "$PANE_CMD bash $SCRIPTS/claude-pane.sh"
+  # Split bottom for claude pane (main interaction)
+  tmux split-window -v -p 60 -t "$KLACK_SESSION:hauptturm.0" "$PANE_CMD bash $SCRIPTS/claude-pane.sh"
 
-  # Split main pane horizontally for sidebar on the right
-  tmux split-window -h -p 25 -t "$KLACK_SESSION:hauptturm.1" "$PANE_CMD bash $SCRIPTS/sidebar.sh"
+  # Split header area to create log+status zone
+  tmux split-window -v -t "$KLACK_SESSION:hauptturm.0" "$PANE_CMD bash $SCRIPTS/log.sh"
 
-  # Resize header to 2 lines
-  tmux resize-pane -t "$KLACK_SESSION:hauptturm.0" -y 2
+  # Split log pane horizontally for status (right 25%)
+  tmux split-window -h -p 25 -t "$KLACK_SESSION:hauptturm.1" "$PANE_CMD bash $SCRIPTS/status.sh"
+
+  # Resize header to 1 line
+  tmux resize-pane -t "$KLACK_SESSION:hauptturm.0" -y 1
+
+  # Add worktree sidebar on the far right (split the whole window)
+  tmux split-window -h -p 20 -t "$KLACK_SESSION:hauptturm.4" "$PANE_CMD bash $SCRIPTS/sidebar.sh"
 
   focus_claude_pane
 }
