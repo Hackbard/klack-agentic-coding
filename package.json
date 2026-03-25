@@ -1,6 +1,6 @@
 {
   "name": "@webkult/klack",
-  "version": "1.0.0", 0423602 (fix(packaging): rename to @webkult/klack (npm name collision with klaw))
+  "version": "1.0.0",
   "description": "Parallel agentic coding. One command to orchestrate them all.",
   "bin": {
     "klack": "./bin/klack"
