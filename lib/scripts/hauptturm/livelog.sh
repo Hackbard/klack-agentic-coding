@@ -70,12 +70,9 @@ while true; do
   fi
 
   # --- Live pane capture from ticket tmux window ---
-  # Reserve lines: title(1) + status(1) + separator(1) + question(~5) + errors(~5) + separator(1)
-  used_lines=4
-  [[ -f "$sig/waiting.flag" ]] && used_lines=$((used_lines + 5))
-  [[ -f "$sig/error.log" && -s "$sig/error.log" ]] && used_lines=$((used_lines + 5))
-  capture_lines=$((rows - used_lines - 2))
-  [[ $capture_lines -lt 5 ]] && capture_lines=5
+  # Use most of the pane height for live output (keep 4 lines for header/status)
+  capture_lines=$((rows - 4))
+  [[ $capture_lines -lt 10 ]] && capture_lines=10
 
   if tmux has-session -t "$KLACK_SESSION" 2>/dev/null && \
      tmux list-windows -t "$KLACK_SESSION" -F '#{window_name}' 2>/dev/null | grep -qx "$ticket"; then
