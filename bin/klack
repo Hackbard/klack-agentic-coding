@@ -411,11 +411,15 @@ EOYML
 
   echo ""
   echo ".klack.yml erstellt (ticket_source: $ts, pr_tool: $pr_tool)"
-fi
 
-# BMAD check
-if [[ ! -d "$KLACK_ROOT/_bmad" ]]; then
-  echo "Note: BMAD nicht initialisiert. Fuer volle Pipeline-Unterstuetzung: bmad init oder BMAD-Method Skills installieren."
+  # BMAD check
+  if [[ ! -d "$KLACK_ROOT/_bmad" ]]; then
+    echo "Note: BMAD nicht initialisiert. Fuer volle Pipeline-Unterstuetzung: bmad init oder BMAD-Method Skills installieren."
+  fi
+
+  echo ""
+  echo "Klack ist bereit! Starte Hauptturm..."
+  echo ""
 fi
 
 # --- Setup .klack/ runtime directory -----------------------------------------

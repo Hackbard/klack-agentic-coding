@@ -134,14 +134,17 @@ json.dump(d, open('$KLACK_ROOT/.klack/session.json', 'w'), indent=2)
 # --- Session Restore (Story 1.6) --------------------------------------------
 
 if [[ $# -eq 0 ]]; then
-  # No arguments — try to restore existing session
-  if [[ ! -f "$KLACK_ROOT/.klack/session.json" ]]; then
-    usage
-  fi
-
+  # No arguments — try to restore existing session or start fresh Hauptturm
   # If tmux session exists, just attach
   if tmux has-session -t "$KLACK_SESSION" 2>/dev/null; then
     echo "Attaching to existing session '$KLACK_SESSION'"
+    exec tmux attach-session -t "$KLACK_SESSION"
+  fi
+
+  if [[ ! -f "$KLACK_ROOT/.klack/session.json" ]]; then
+    # No session — start fresh Hauptturm (no tickets, just the workspace)
+    setup_tmux_session
+    init_hauptturm
     exec tmux attach-session -t "$KLACK_SESSION"
   fi
 
