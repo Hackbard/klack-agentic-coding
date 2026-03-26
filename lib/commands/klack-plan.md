@@ -5,7 +5,7 @@ Du bist der Klack-Planer. Der Developer will ein neues Epic anlegen und daraus T
 ## Deine Umgebung
 
 Lies `.klack.yml` im Projektroot fuer:
-- `ticket_source`: Wo Tickets erstellt werden (jira, github, gitlab, markdown)
+- `ticket_source`: Wo Tickets erstellt werden (jira, github, gitlab, markdown, bmad)
 - Projekt-Kontext aus vorhandenen Dateien
 
 ## Ablauf
@@ -54,6 +54,55 @@ Basierend auf `ticket_source` aus `.klack.yml`:
 - `glab issue create --title "..." --description "..."` pro Ticket
 - Labels fuer Typ setzen
 
+**bmad** (BMad-nativ):
+- Scanne `_bmad-output/implementation-artifacts/` um die naechste Epic-Nummer zu bestimmen:
+  - Hoechste `{N}` in existierenden `{N}-*.md` Dateien + 1
+  - Falls Verzeichnis leer oder nicht vorhanden: N=1
+  - `mkdir -p _bmad-output/implementation-artifacts/` falls noetig
+- Erzeuge fuer jedes Ticket: `_bmad-output/implementation-artifacts/{N}-{M}-{slug}.md`
+  - Slug: Titel lowercase, Leerzeichen → Bindestriche, nur `a-z 0-9 -`, max 50 Zeichen
+  - Format: BMad Story Format (siehe unten)
+- Abhaengigkeiten: Wenn Ticket B auf Ticket A aufbaut, fuege `Depends: {N}-{A_num}` als
+  Top-Level-Feld vor der `## Story` Sektion ein
+- Optionally: aktualisiere `_bmad-output/planning-artifacts/epics.md` mit neuem Epic-Abschnitt
+  (falls die Datei existiert)
+
+**BMad Story Format** (exakt verwenden):
+```markdown
+# Story {N}.{M}: {Title}
+
+Status: ready-for-dev
+
+## Story
+
+As a ...,
+I want ...,
+so that ...
+
+## Acceptance Criteria
+
+1. **Given** ... **When** ... **Then** ...
+
+## Tasks / Subtasks
+
+- [ ] Task 1 (AC: #1)
+  - [ ] Subtask 1.1
+
+## Dev Notes
+
+...
+
+## Dev Agent Record
+
+### Agent Model Used
+
+### Debug Log References
+
+### Completion Notes List
+
+### File List
+```
+
 ### 4. Startbereit
 
 Wenn alle Tickets angelegt sind, zeig dem Developer den Startbefehl:
@@ -66,6 +115,11 @@ klack feat EN-001 feat EN-002 feat EN-003
 Oder bei Jira/GitHub:
 ```
 klack feat IN-1400 feat IN-1401 feat IN-1402
+```
+
+Oder bei BMad (epic N mit M Tickets):
+```
+klack feat {N}-1 feat {N}-2 feat {N}-3
 ```
 
 ## Regeln

@@ -181,6 +181,16 @@ check_dependencies() {
     deps="$(grep '^Depends:' "$ticket_file" 2>/dev/null | sed 's/^Depends:[[:space:]]*//' | tr ',' ' ')"
   fi
 
+  # Try bmad story file (ticket_source: bmad)
+  local bmad_story
+  bmad_story="$(find "$KLACK_ROOT/_bmad-output/implementation-artifacts" \
+    -name "${TICKET}-*.md" -type f 2>/dev/null | head -1)"
+  if [[ -n "$bmad_story" ]]; then
+    local bmad_deps
+    bmad_deps="$(grep '^Depends:' "$bmad_story" 2>/dev/null | sed 's/^Depends:[[:space:]]*//' | tr ',' ' ' || true)"
+    deps="$deps $bmad_deps"
+  fi
+
   # Also check for a deps file that klack epic / klack plan might create
   local deps_file="$KLACK_DIR/depends.txt"
   if [[ -f "$deps_file" ]]; then

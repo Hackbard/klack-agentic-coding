@@ -1,0 +1,6 @@
+# Klack config for BMad API test fixture
+ticket_source: bmad
+pr_tool: github
+pr_target_branch: main
+qa_ci_config: none
+ci_tool: github
