@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/Hackbard/klack-agentic-coding/compare/v1.0.2...v1.0.3) (2026-03-26)
+
+
+### Bug Fixes
+
+* **hauptturm:** make claude pane work without hauptturm.md, robust focus ([8467885](https://github.com/Hackbard/klack-agentic-coding/commit/8467885fec35525485c4deb165fdd3bf7615937f))
+
 ## [1.0.2](https://github.com/Hackbard/klack-agentic-coding/compare/v1.0.1...v1.0.2) (2026-03-26)
 
 
