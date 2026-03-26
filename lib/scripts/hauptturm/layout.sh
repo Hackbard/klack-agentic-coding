@@ -47,5 +47,6 @@ tmux resize-pane -t "$KLACK_SESSION:hauptturm.0" -y 1
 # Status cards = 5 lines (compact)
 tmux resize-pane -t "$KLACK_SESSION:hauptturm.1" -y 5
 
-# Focus claude pane
-tmux select-pane -t "$KLACK_SESSION:hauptturm.2"
+# Focus claude pane (pane 2 = the main interaction pane)
+sleep 0.5
+tmux select-pane -t "$KLACK_SESSION:hauptturm.2" 2>/dev/null || true
