@@ -299,6 +299,63 @@ if [[ "${1:-}" == "test" ]]; then
   shift
   scenario="${1:-default}"
 
+  # Unit tests (no fixture needed)
+  if [[ "$scenario" == "unit" ]]; then
+    UNIT_DIR="$(dirname "$REAL_BIN")/../test/unit"
+    if [[ ! -d "$UNIT_DIR" ]]; then
+      echo "ERROR: Unit test directory not found at $UNIT_DIR" >&2
+      exit 1
+    fi
+    echo "Running unit tests..."
+    echo ""
+    fail=0
+    for test_file in "$UNIT_DIR"/*.sh; do
+      [[ -f "$test_file" ]] || continue
+      echo "--- $(basename "$test_file") ---"
+      bash "$test_file" || fail=1
+      echo ""
+    done
+    if [[ $fail -eq 0 ]]; then
+      echo "All unit tests passed."
+    else
+      echo "Some unit tests failed." >&2
+      exit 1
+    fi
+    exit 0
+  fi
+
+  # BMad fixture scenario
+  if [[ "$scenario" == "bmad" || "$scenario" == "bmad-deps" ]]; then
+    FIXTURE_DIR="$(dirname "$REAL_BIN")/../test/fixtures/bmad-api"
+    if [[ ! -d "$FIXTURE_DIR" ]]; then
+      echo "ERROR: BMad test fixture not found at $FIXTURE_DIR" >&2
+      exit 1
+    fi
+
+    TEST_DIR="/tmp/klack-test-$(date +%s)"
+    echo "Setting up BMad test project in $TEST_DIR..."
+
+    cp -r "$FIXTURE_DIR" "$TEST_DIR"
+    cd "$TEST_DIR"
+
+    git init -b main
+    git add -A
+    git commit -m "init: BMad API test fixture"
+
+    echo "Test project ready: $TEST_DIR"
+    echo ""
+
+    if [[ "$scenario" == "bmad" ]]; then
+      echo "Running bmad test: feat 1-1 (ticket_source: bmad, find story from _bmad-output/)"
+      echo ""
+      exec "$REAL_BIN" feat 1-1
+    else
+      echo "Running bmad-deps test: feat 1-1 feat 1-2 (1-2 depends on 1-1, sequential)"
+      echo ""
+      exec "$REAL_BIN" feat 1-1 feat 1-2
+    fi
+  fi
+
   FIXTURE_DIR="$(dirname "$REAL_BIN")/../test/fixtures/happy-api"
   if [[ ! -d "$FIXTURE_DIR" ]]; then
     echo "ERROR: Test fixture not found at $FIXTURE_DIR" >&2
@@ -348,7 +405,7 @@ if [[ "${1:-}" == "test" ]]; then
       ;;
     *)
       echo "Unknown test scenario: $scenario" >&2
-      echo "Available: default, conflict, review-block, all" >&2
+      echo "Available: unit, default, conflict, review-block, all, bmad, bmad-deps" >&2
       exit 1
       ;;
   esac
