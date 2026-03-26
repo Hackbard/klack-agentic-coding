@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/Hackbard/klack-agentic-coding/compare/v1.0.1...v1.0.2) (2026-03-26)
+
+
+### Bug Fixes
+
+* **cli:** start Hauptturm after init wizard, even without tickets ([f70f882](https://github.com/Hackbard/klack-agentic-coding/commit/f70f8820f7568532d2d1a9c4da34a814a2509f38))
+
 ## [1.0.1](https://github.com/Hackbard/klack-agentic-coding/compare/v1.0.0...v1.0.1) (2026-03-25)
 
 
