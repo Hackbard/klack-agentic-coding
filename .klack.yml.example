@@ -25,3 +25,7 @@ ci_tool: gitlab
 
 # Optional: custom branch prefix (default: worktree-)
 # branch_prefix: worktree-
+
+# Which coding agent to use for pipeline execution?
+# Options: claude (Claude Code), opencode
+agent: claude

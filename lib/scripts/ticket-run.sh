@@ -115,6 +115,35 @@ EOQUEST
   rm -f "$KLACK_DIR/answer.txt" "$KLACK_DIR/question.txt"
 }
 
+# --- Agent Dispatch ----------------------------------------------------------
+
+run_agent() {
+  local prompt="$1"
+  local model="$2"
+  local agent_type
+  agent_type="$(grep '^agent:' "$KLACK_ROOT/.klack.yml" 2>/dev/null | sed 's/^agent:[[:space:]]*//' | xargs)"
+  agent_type="${agent_type:-claude}"
+
+  case "$agent_type" in
+    claude)
+      ANTHROPIC_MODEL="$model" claude \
+        --dangerously-skip-permissions \
+        --chrome \
+        "${MCP_CONFIG_ARGS[@]}" \
+        -p "$prompt" 2>&1 | tee "$agent_log"
+      return "${PIPESTATUS[0]}"
+      ;;
+    opencode)
+      echo "ERROR: OpenCode agent not yet implemented (E16-002)" >&2
+      return 1
+      ;;
+    *)
+      echo "ERROR: Unknown agent '${agent_type}' in .klack.yml. Supported: claude, opencode" >&2
+      return 1
+      ;;
+  esac
+}
+
 # --- MCP Config Discovery ----------------------------------------------------
 # Merge all MCP configs (project + plugins + user) into one normalized file.
 # --mcp-config requires {"mcpServers": {...}} format.
@@ -291,15 +320,11 @@ KLACK_DIR: $KLACK_DIR"
 
     agent_log="$KLACK_DIR/agent-output.log"
 
-    # Run Claude autonomously — output tee'd to agent-output.log for livelog panel
+    # Run agent autonomously — output tee'd to agent-output.log for livelog panel
     > "$agent_log"
     set +e
-    ANTHROPIC_MODEL="$step_model" claude \
-      --dangerously-skip-permissions \
-      --chrome \
-      "${MCP_CONFIG_ARGS[@]}" \
-      -p "$prompt" 2>&1 | tee "$agent_log"
-    claude_exit=${PIPESTATUS[0]}
+    run_agent "$prompt" "$step_model"
+    claude_exit=$?
     set -e
 
     if [[ $claude_exit -eq 0 ]]; then

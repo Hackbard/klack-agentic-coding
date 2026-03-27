@@ -400,12 +400,26 @@ if [[ ! -f "$KLACK_ROOT/.klack.yml" ]]; then
     [[ -n "$jira_key" ]] && jira_line="jira_project: $jira_key"
   fi
 
+  echo ""
+  echo "Welchen Coding-Agent möchtest du nutzen?"
+  echo "  1) Claude Code"
+  echo "  2) OpenCode"
+  echo ""
+  printf "Auswahl [1-2]: "
+  read -r agent_choice
+
+  case "$agent_choice" in
+    2) coding_agent="opencode" ;;
+    1|*) coding_agent="claude" ;;
+  esac
+
   cat > "$KLACK_ROOT/.klack.yml" <<EOYML
 ticket_source: $ts
 pr_tool: $pr_tool
 pr_target_branch: $pr_target
 qa_ci_config: none
 ci_tool: $ci_tool
+agent: $coding_agent
 ${jira_line}
 EOYML
 
@@ -420,6 +434,12 @@ EOYML
   echo ""
   echo "Klack ist bereit! Starte Hauptturm..."
   echo ""
+fi
+
+# --- Ensure agent key in .klack.yml (backward compat) -----------------------
+
+if [[ -f "$KLACK_ROOT/.klack.yml" ]] && ! grep -q '^agent:' "$KLACK_ROOT/.klack.yml"; then
+  echo "agent: claude" >> "$KLACK_ROOT/.klack.yml"
 fi
 
 # --- Setup .klack/ runtime directory -----------------------------------------
